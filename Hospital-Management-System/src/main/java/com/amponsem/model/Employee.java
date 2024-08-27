@@ -1,21 +1,21 @@
 package com.amponsem.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Setter
 @Getter
-public class Employee {
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Employee {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeNumber;
-    private String surName;
+
+    private String surname;
     private String firstName;
     private String address;
     private String telephoneNumber;
-
+    // Getters and setters
 }
-
