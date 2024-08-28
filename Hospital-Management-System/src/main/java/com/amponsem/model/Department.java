@@ -1,13 +1,19 @@
+
 package com.amponsem.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Setter
+@Getter
 @Entity
 public class Department {
 
     @Id
-    private String code;
+    private String code;  // This must be manually assigned in the JSON payload
 
     private String name;
     private String building;
@@ -22,5 +28,5 @@ public class Department {
     @OneToMany(mappedBy = "department")
     private List<Nurse> nurses;
 
-    // Getters and setters
 }
+
