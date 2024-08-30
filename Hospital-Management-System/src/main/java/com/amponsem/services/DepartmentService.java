@@ -1,11 +1,13 @@
 package com.amponsem.services;
 
 import com.amponsem.model.Department;
-import com.amponsem.model.Doctor;
 import com.amponsem.repository.DepartmentRepository;
-import com.amponsem.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +19,23 @@ public class DepartmentService {
     private DepartmentRepository departmentRepository;
 
     @Autowired
-    private DoctorRepository doctorRepository;
+    private PlatformTransactionManager transactionManager; // For programmatic transactions
+
+    public Department saveDepartment(Department department) {
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setName("SaveDepartmentTransaction");
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+
+        TransactionStatus status = transactionManager.getTransaction(def);
+        try {
+            Department savedDepartment = departmentRepository.save(department);
+            transactionManager.commit(status);
+            return savedDepartment;
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw e;
+        }
+    }
 
     public List<Department> getAllDepartments() {
         return departmentRepository.findAll();
@@ -27,29 +45,33 @@ public class DepartmentService {
         return departmentRepository.findById(code);
     }
 
-    public Department createDepartment(Department department) {
-        Doctor director = department.getDirector();
-        if (director != null) {
-            doctorRepository.save(director);
-        }
-        return departmentRepository.save(department);
-    }
-
     public Optional<Department> updateDepartment(String code, Department departmentDetails) {
-        return departmentRepository.findById(code).map(department -> {
-            department.setName(departmentDetails.getName());
-            department.setBuilding(departmentDetails.getBuilding());
-            department.setDirector(departmentDetails.getDirector());
-            department.setWards(departmentDetails.getWards());
-            department.setNurses(departmentDetails.getNurses());
-            return departmentRepository.save(department);
+        return departmentRepository.findById(code).map(existingDepartment -> {
+            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+            def.setName("UpdateDepartmentTransaction");
+            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+
+            TransactionStatus status = transactionManager.getTransaction(def);
+            try {
+                existingDepartment.setName(departmentDetails.getName());
+                existingDepartment.setBuilding(departmentDetails.getBuilding());
+                existingDepartment.setDirector(departmentDetails.getDirector());
+                existingDepartment.setWards(departmentDetails.getWards());
+                existingDepartment.setNurses(departmentDetails.getNurses());
+                departmentRepository.save(existingDepartment);
+                transactionManager.commit(status);
+                return existingDepartment;
+            } catch (Exception e) {
+                transactionManager.rollback(status);
+                throw e;
+            }
         });
     }
 
     public boolean deleteDepartment(String code) {
-        return departmentRepository.findById(code).map(department -> {
-            departmentRepository.delete(department);
-            return true;
-        }).orElse(false);
+        if (departmentRepository.existsById(code)) {
+            departmentRepository.deleteById(code);
+        }
+        return false;
     }
 }

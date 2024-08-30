@@ -12,7 +12,8 @@ import lombok.Setter;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
-        property = "type")
+        property = "type"
+)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Doctor.class, name = "doctor"),
         @JsonSubTypes.Type(value = Nurse.class, name = "nurse")
@@ -28,5 +29,5 @@ public abstract class Employee {
     private String firstName;
     private String address;
     private String telephoneNumber;
-    // Getters and setters
+    // Other fields and methods...
 }

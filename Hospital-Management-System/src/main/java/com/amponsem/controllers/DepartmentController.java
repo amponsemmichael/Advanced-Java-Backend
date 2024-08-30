@@ -1,6 +1,9 @@
 package com.amponsem.controllers;
 
 import com.amponsem.model.Department;
+
+import com.amponsem.model.Doctor;
+import com.amponsem.repository.DoctorRepository;
 import com.amponsem.services.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,9 @@ public class DepartmentController {
     @Autowired
     private DepartmentService departmentService;
 
+    @Autowired
+    private DoctorRepository doctorRepository;
+
     @GetMapping
     public List<Department> getAllDepartments() {
         return departmentService.getAllDepartments();
@@ -27,9 +33,23 @@ public class DepartmentController {
         return department.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Department createDepartment(@RequestBody Department department) {
-        return departmentService.createDepartment(department);
+    // Create or save a department
+    @PostMapping("/save")
+    public ResponseEntity<Department> createDepartment(@RequestBody Department department) {
+        if (department.getCode() == null || department.getCode().isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        // Check if the referenced Doctor exists
+        if (department.getDirector() != null) {
+            Optional<Doctor> doctor = doctorRepository.findById(department.getDirector().getEmployeeNumber());
+            if (doctor.isEmpty()) {
+                return ResponseEntity.badRequest().body(null);
+            }
+        }
+
+        Department savedDepartment = departmentService.saveDepartment(department);
+        return ResponseEntity.ok(savedDepartment);
     }
 
     @PutMapping("/{code}")
