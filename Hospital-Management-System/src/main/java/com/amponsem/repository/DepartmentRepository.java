@@ -12,19 +12,6 @@ import java.util.Optional;
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, String> {
 
-    // Find department by code
-    @Query("SELECT d FROM Department d WHERE d.code = :code")
-    Optional<Department> findByCode(@Param("code") String code);
+    Optional<Department> findByCode(String code);
 
-    // Find all departments
-    @Query("SELECT d FROM Department d")
-    List<Department> findAllDepartments();
-
-    // Custom query to find departments by name
-    @Query("SELECT d FROM Department d WHERE d.name LIKE %:name%")
-    List<Department> findDepartmentsByName(@Param("name") String name);
-
-    // Custom query to count departments
-    @Query("SELECT COUNT(d) FROM Department d")
-    long countDepartments();
 }
