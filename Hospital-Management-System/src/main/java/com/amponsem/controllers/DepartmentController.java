@@ -2,6 +2,7 @@ package com.amponsem.controllers;
 
 import com.amponsem.model.Department;
 import com.amponsem.services.DepartmentService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +23,11 @@ public class DepartmentController {
     }
 
     @GetMapping("/{code}")
-    public ResponseEntity<Department> getDepartmentByCode(@PathVariable String code) {
-        Optional<Department> department = departmentService.getDepartmentByCode(code);
-        return department.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public Department getDepartmentByCode(@PathVariable String code) {
+        return departmentService.getDepartmentByCode(code)
+                .orElse(null);
     }
+
 
     @PostMapping("/save")
     public Department createDepartment(@RequestBody Department department) {
@@ -38,6 +40,7 @@ public class DepartmentController {
         return updatedDepartment.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @Transactional
     @DeleteMapping("/{code}")
     public ResponseEntity<Void> deleteDepartment(@PathVariable String code) {
         boolean isDeleted = departmentService.deleteDepartment(code);

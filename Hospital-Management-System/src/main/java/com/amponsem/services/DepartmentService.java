@@ -2,8 +2,11 @@ package com.amponsem.services;
 
 import com.amponsem.model.Department;
 import com.amponsem.model.Doctor;
+import com.amponsem.model.Ward;
 import com.amponsem.repository.DepartmentRepository;
 import com.amponsem.repository.DoctorRepository;
+import com.amponsem.repository.WardRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -21,6 +24,8 @@ public class DepartmentService {
 
     @Autowired
     private DoctorRepository doctorRepository;
+    @Autowired
+    private WardRepository wardRepository;
 
     public List<Department> getAllDepartments() {
         return departmentRepository.findAll();
@@ -52,11 +57,22 @@ public class DepartmentService {
         });
     }
 
-    @CacheEvict(value = "departments", key = "code")
+    @CacheEvict(value = "departments", key = "#code")
+    @Transactional
     public boolean deleteDepartment(String code) {
+        Department department = departmentRepository.findById(code).orElse(null);
+        if (department != null) {
+            List<Ward> departmentWards = department.getWards();
+            if (departmentWards != null) {
+                for (Ward ward : departmentWards) {
+                    wardRepository.deleteById(ward.getNumber());
+                }
+            }
+        }
+
         return departmentRepository.findByCode(code)
-                .map(department -> {
-                    departmentRepository.delete(department);
+                .map(dpt -> {
+                    departmentRepository.delete(dpt);
                     return true;
                 })
                 .orElse(false);
