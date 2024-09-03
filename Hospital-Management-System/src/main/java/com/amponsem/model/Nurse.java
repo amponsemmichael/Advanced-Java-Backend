@@ -13,6 +13,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
+
 public class Nurse extends Employee {
     private String rotation;
     private BigDecimal salary;
