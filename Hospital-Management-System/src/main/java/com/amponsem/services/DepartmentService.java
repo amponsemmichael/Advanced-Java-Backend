@@ -5,6 +5,9 @@ import com.amponsem.model.Doctor;
 import com.amponsem.repository.DepartmentRepository;
 import com.amponsem.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +26,10 @@ public class DepartmentService {
         return departmentRepository.findAll();
     }
 
+    @Cacheable(value = "department", key="#code")
     public Optional<Department> getDepartmentByCode(String code) {
-        return departmentRepository.findById(code);
+        System.out.println("loading from database");
+        return departmentRepository.findByCode(code);
     }
 
     public Department createDepartment(Department department) {
@@ -35,6 +40,7 @@ public class DepartmentService {
         return departmentRepository.save(department);
     }
 
+    @CachePut(value = "departments", key = "#code")
     public Optional<Department> updateDepartment(String code, Department departmentDetails) {
         return departmentRepository.findById(code).map(department -> {
             department.setName(departmentDetails.getName());
@@ -46,6 +52,7 @@ public class DepartmentService {
         });
     }
 
+    @CacheEvict(value = "departments", key = "code")
     public boolean deleteDepartment(String code) {
         return departmentRepository.findByCode(code)
                 .map(department -> {
