@@ -20,7 +20,7 @@ public class Ward {
     @JoinColumn(name = "department_code")
     private Department department;
 
-    @OneToMany(mappedBy = "ward")
-    private List<Patient> patients;
+//    @OneToMany(mappedBy = "ward")
+//    private List<Patient> patients;
 
 }

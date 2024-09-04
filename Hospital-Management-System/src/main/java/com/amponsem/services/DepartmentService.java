@@ -45,7 +45,7 @@ public class DepartmentService {
         return departmentRepository.save(department);
     }
 
-    @CachePut(value = "departments", key = "#code")
+    @CachePut(value = "department", key = "#code")
     public Optional<Department> updateDepartment(String code, Department departmentDetails) {
         return departmentRepository.findById(code).map(department -> {
             department.setName(departmentDetails.getName());
@@ -57,7 +57,7 @@ public class DepartmentService {
         });
     }
 
-    @CacheEvict(value = "departments", key = "#code")
+    @CacheEvict(value = "department", key = "#code")
     @Transactional
     public boolean deleteDepartment(String code) {
         Department department = departmentRepository.findById(code).orElse(null);

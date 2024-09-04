@@ -16,8 +16,8 @@ public class Doctor extends Employee {
 
     private String speciality;
 
-    @OneToMany(mappedBy = "doctor")
-    private List<Patient> patients;
+//    @OneToMany(mappedBy = "doctor")
+//    private List<Patient> patients;
 
     // Getters and setters
 }
