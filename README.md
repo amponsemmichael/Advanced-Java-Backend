@@ -60,5 +60,5 @@ Learn how Spring Data derives queries from method names and how to customize the
 To get started with this repository, clone it and follow the instructions in each section's README file.
 
 ```bash
-git clone https://github.com/yourusername/spring-data-repositories.git
-cd spring-data-repositories
+git clone https://github.com/amponsemmichael/Advanced-Java-Backend.git
+cd SpringDataRepoLab
