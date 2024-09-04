@@ -59,7 +59,6 @@ This section focuses on:
 ### Key Topics
 
 - Spring Data MongoDB
-- Spring Data Cassandra
 - Spring Data Redis
 - Repository Support for NoSQL
 
