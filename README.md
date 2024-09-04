@@ -32,7 +32,7 @@ This section covers:
 ### Key Topics
 
 - Repository Interfaces
-- CrudRepository, JpaRepository, and PagingAndSortingRepository
+- CrudRepository, and JpaRepository
 - Custom Query Methods
 - Query Derivation
 
